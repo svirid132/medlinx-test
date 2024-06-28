@@ -10,6 +10,7 @@ class MessageSerialPort : public QObject
     Q_OBJECT
     Q_PROPERTY(bool isReading READ isReading NOTIFY isReadingChanged)
     Q_PROPERTY(NOTIFY newMessage)
+    Q_PROPERTY(NOTIFY error)
 
 public:
     explicit MessageSerialPort(QObject *parent = nullptr);
@@ -21,6 +22,7 @@ public:
 signals:
     void isReadingChanged();
     void newMessage(const Message& message);
+    void error(const QString& text);
 
 private:
     QSerialPort m_serialPort;

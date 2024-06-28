@@ -3,6 +3,7 @@ import QtQuick.Controls 2.15
 import QtQuick.Window 2.15
 import Modules 1.0
 import QtQuick.Layouts 1.15
+import QtQuick.Dialogs 1.3
 
 Window {
     width: 640
@@ -75,7 +76,7 @@ Window {
 
                     Button {
                         padding: 10
-                        text: messageSerialPort.isReading ? 'Стоп' : 'Считать /dev/ttyUSB0'
+                        text: messageSerialPort.isReading ? 'Стоп' : 'Считать /dev/tnt0'
                         font.pixelSize: 16
                         onClicked: {
                             if (messageSerialPort.isReading) {
@@ -95,6 +96,17 @@ Window {
         onNewMessage: {
             messageModel.insert(message)
         }
+        onError: {
+            messageDialog.informativeText = text
+            messageDialog.open()
+        }
+    }
+
+    MessageDialog {
+        id: messageDialog
+        icon: StandardIcon.Critical
+        title: 'Ошибка'
+        text: 'Возникла ошибка у serialport:'
     }
 }
 

@@ -39,6 +39,7 @@ else()
           Message.h
           messagemodel.h messagemodel.cpp
           messageserialport.h messageserialport.cpp
+          bytehandler.h bytehandler.cpp
         )
     endif()
 endif()
