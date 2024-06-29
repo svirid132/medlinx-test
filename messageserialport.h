@@ -28,6 +28,8 @@ private:
     QSerialPort m_serialPort;
     bool m_isReading = false;
     unsigned short crc16(unsigned char *pcBlock, unsigned short len);
+    unsigned short dataToUshort(const char *data);
+    qint32 dataToInt(const char* data);
 };
 
 #endif // MESSAGESERIALPORT_H

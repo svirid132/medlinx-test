@@ -1,5 +1,4 @@
 #include "messageserialport.h"
-#include "bytehandler.h"
 
 #include <QSerialPortInfo>
 
@@ -16,21 +15,17 @@ MessageSerialPort::MessageSerialPort(QObject *parent)
         }
         int rawDataSize = data.size() - 2; // без двух байт crc16
         unsigned short calculecCrc16 = crc16((unsigned char*)data.data(), rawDataSize);
-        QByteArray receivedCrc16Bytes = data.mid( rawDataSize, 2 );
-        unsigned short receivedCrc16 = translateByteArrayToNum<unsigned short>(receivedCrc16Bytes);
+        unsigned short receivedCrc16 = dataToUshort(data.data() + rawDataSize);
         if (calculecCrc16 != receivedCrc16) {
             return;
         }
         Message message;
         message.address = data[0];
         message.type = static_cast<Message::MESSAGE_TYPE>(data[1]);
-        QByteArray sizeBytes = data.mid(2, 2);
-        unsigned short size = translateByteArrayToNum<unsigned short>(sizeBytes);
-        message.size = size;
+        message.size = dataToUshort(data.data() + 2);;
         switch (message.type) {
         case Message::NUMBER: {
-            QByteArray numBytes = data.mid(4, message.size);
-            qint32 num = translateByteArrayToNum<qint32>(numBytes);
+            qint32 num = dataToInt(data.data() + 4);
             message.data = QVariant::fromValue( num );
             break;
         }
@@ -83,4 +78,22 @@ unsigned short MessageSerialPort::crc16(unsigned char *pcBlock, unsigned short l
             crc = crc & 0x8000 ? (crc << 1) ^ 0x1021 : crc << 1;
     }
     return crc;
+}
+
+unsigned short MessageSerialPort::dataToUshort(const char *data)
+{
+    unsigned short num = 0;
+    num = ((unsigned char)data[0] << 8) |
+            (unsigned char)data[1];
+    return num;
+}
+
+qint32 MessageSerialPort::dataToInt(const char *data)
+{
+    quint32 num = 0;
+    num = ((unsigned char)data[0] << 24) |
+            ((unsigned char)data[1] << 16) |
+            ((unsigned char)data[2] << 8) |
+            (unsigned char)data[3];
+    return (qint32)num;
 }
